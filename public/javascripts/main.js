@@ -1,10 +1,9 @@
 //Fastclick.js
-document.addEventListener("touchstart", function(){}, true);
+
 window.addEventListener('load', function(){
-		testB = document.getElementById('body');
-		console.log('load addEventListener')
+
 	//Android 2.2 needs FastClick to be instantiated before the other listeners so that the stopImmediatePropagation hack can work.
-	FastClick.attach(testB);
+	FastClick.attach(document.body);
 },false);
 
 jQuery(document).ready(function() {
