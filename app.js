@@ -40,12 +40,16 @@ app.get('/track', function(req, res){
 
 
 	var cmd = "osascript ./playing-track.scpt ";
-	console.log('index')
+
 	exec(cmd, function(err, stdout, stderr) {
 		isRequesting = true;
 
 		if (stdout){
-			obj.track = stdout;
+			stdout =stdout.trim('\n')
+			stdout =stdout.split(":");
+			obj.track = stdout[0];
+			obj.artist = stdout[1];
+			obj.status = stdout[2];
 			console.log(stdout);
 			
 		}	

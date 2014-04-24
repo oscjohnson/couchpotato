@@ -1,4 +1,5 @@
 //Fastclick.js
+document.addEventListener("touchstart", function(){}, true);
 window.addEventListener('load', function(){
 		testB = document.getElementById('body');
 		console.log('load addEventListener')
@@ -12,18 +13,45 @@ jQuery(document).ready(function() {
 		$.ajax({
 			url:'/track',
 			success: function(data){
-				$('#playing-track').html(data.track);
-				console.log(data);
+				$('#playing-track').html(data.track +" - "+ data.artist);
+				if(data.status == "playing"){
+					$('#playpause').addClass("playing");
+					playpause('notplaying');
+
+				}else{
+					playpause('playing');
+
+				}
+
 			}
 		});
 	}
 	getPlayingtrack();
 
+	function playpause(status){
+		if(status== "playing"){
+			$('#play').show();
+			$('#pause').hide();
+		}else{
+			$('#play').hide();
+			$('#pause').show();
+		}
+	}
+	function togglePausePlay(){
+		$('#playpause').toggleClass('playing');
+		if($('#playpause').hasClass('playing') ){
+			console.log('playing')
+			playpause("notplaying");
+		}else{
+			console.log('not playing')
+			playpause("playing")
+		}
+	}
 	//$('#playing-track').html('Foo Fighters - Wheels <br/> Greatest Hits')
 
-	$('#play').on('click', function(){
+	$('#playpause').on('click', function(){
 		$.ajax({url: "/command/playpause"})
-		$(this).toggleClass('white');
+		togglePausePlay();
 	});
 
 	$('#next').on('click', function(){

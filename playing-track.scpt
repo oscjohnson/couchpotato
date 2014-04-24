@@ -12,7 +12,7 @@ try
 			set playStatus to "notPlaying"
 		end if
 
-		set p to theName
+		set p to theName & ":" & theArtist & ":" & playStatus
 		#set p to  theTrack & ":" & theArtist & ":" & state
 	    return p
 	end tell
