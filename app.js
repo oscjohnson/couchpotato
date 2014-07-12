@@ -4,7 +4,7 @@ var sys = require('sys'),
  * Module dependencies.
  */
 
-
+var socket = require('socket.io')
 var exphbs  = require('express3-handlebars');
 var express = require('express');
 var routes = require('./routes');
@@ -12,31 +12,42 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
+// var app = express();
 var app = express();
 
-//app.configure(function(){
+
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
-//	app.set('views', __dirname+'/views');
-
-//});
-
-// all environments
-app.set('port', process.env.PORT || 3000);
-
-//tell application "Spotify" to playpause
-	// using terms from application "Spotify"
+// app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
+
+
+var chat_room = socket.listen(app.listen(1111));
+
+chat_room.sockets.on('connection', function(client){
+	console.log('connection')
+
+
+	// socket.on('disconnect', function() {
+	// 	chat_room.sockets.emit('exit', {message: 'A chatter has disconnected'})
+	// });
+
+	// socket.on('chat', function(data){
+	// 	chat_room.sockets.emit('chat', {message: '# ' + data.message});
+	// })
+
+	chat_room.sockets.emit('entrance', {message: 'A new chatter is online.'});
+});
+
 var isRequesting = false;
 
 app.get('/', routes.index);
 
 app.get('/track', function(req, res){
-	var obj = {};
+
 
 
 	var cmd = "osascript ./playing-track.scpt ";
@@ -44,6 +55,7 @@ app.get('/track', function(req, res){
 	exec(cmd, function(err, stdout, stderr) {
 		isRequesting = true;
 
+		var obj = {};
 		if (stdout){
 			stdout =stdout.trim('\n')
 			stdout =stdout.split(":");
@@ -64,17 +76,20 @@ app.get('/track', function(req, res){
 });
 app.get('/command/:command', function(req, res){
 
-	// console.log(req);
-	// if (isRequesting) {
-	// 	res.send(404);
-	// };
+
+
+	var cmd ;
 
 	var command = req.params.command;
+	if(command == "play"){
+		var link = req.query.link
+		cmd= "osascript ./spotify.scpt " + command +" "+ link;
+	}else{
 
+		cmd= "osascript ./spotify.scpt " + command;
+	}
 	// var cmd = "osascript spotify.scpt";
 
-
-	var cmd = "osascript ./spotify.scpt " + command;
 
 	exec(cmd, function(err, stdout, stderr) {
 		isRequesting = true;
@@ -88,11 +103,7 @@ app.get('/command/:command', function(req, res){
 		res.send(200);
 	});
 
-	
 
-
-
-	//
 
 });
 

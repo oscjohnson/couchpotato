@@ -1,31 +1,61 @@
+jQuery(document).ready(function($) {
 //Fastclick.js
-
 window.addEventListener('load', function(){
 
 	//Android 2.2 needs FastClick to be instantiated before the other listeners so that the stopImmediatePropagation hack can work.
 	FastClick.attach(document.body);
 },false);
 
-jQuery(document).ready(function() {
+var shake =true; 
+var repeater;
 
-	function getPlayingtrack(){
-		$.ajax({
-			url:'/track',
-			success: function(data){
-				$('#playing-track').html(data.track +" - "+ data.artist);
-				if(data.status == "playing"){
-					$('#playpause').addClass("playing");
-					playpause('notplaying');
+function debounce(a,b,c){var d;return function(){var e=this,f=arguments;clearTimeout(d),d=setTimeout(function(){d=null,c||a.apply(e,f)},b),c&&!d&&a.apply(e,f)}}
 
-				}else{
-					playpause('playing');
 
-				}
+function getPlayingtrack(){
+	$.ajax({
+		url:'/track',
+		success: function(data){
+			$('#playing-track').html(data.track +" - "+ data.artist);
+			if(data.status == "playing"){
+				$('#playpause').addClass("playing");
+				playpause('notplaying');
+
+			}else{
+				playpause('playing');
 
 			}
+
+		}
+	});
+	//repeater= window.setTimeout(getPlayingtrack(), 1000*2);
+}
+
+
+
+
+
+
+		var socket = io.connect('http://localhost:1111');
+
+		socket.on('entrance', function(data){
+			// $('#chat_log').append(data.message);
+			console.log(data.message)
 		});
-	}
-	getPlayingtrack();
+
+
+		socket.on('click', function(data){
+			// $('#chat_log').append(data.message);
+			console.log(data.message)
+		});
+
+		
+
+
+	
+
+
+
 
 	function playpause(status){
 		if(status== "playing"){
@@ -65,32 +95,95 @@ jQuery(document).ready(function() {
 
 	});
 
+	$('input[name="shake"]').on('click', function(e){
+		var a =document.querySelector('input[name="shake"]').checked;
+		shake = (a) ? true : false;
+		console.log(shake)
+
+	})
+
+	var $search = $('#search');
+
+	$('#search').on('keyup', debounce(ajaxcall, 700, false));
+
+	function ajaxcall(){
+
+		var q = $search.val();
+		$.ajax({
+			url: 'http://ws.spotify.com/search/1/track.json?q='+ q,
+			success: function(data){
+
+				$('#search-suggestions ul').empty();
+
+				var infostring="";	
+				for (var i = 0; i < 5; i++) {
+
+
+					infostring+= '<li data-link="'+
+						data.tracks[i].href+'">'+
+						data.tracks[i].name+'</li>'
+				};
+
+				$('#search-suggestions ul').append(infostring);
+			}
+		});
+	}
+
+
+
+	$('#search-suggestions ul').on('click', 'li', function(){
+		$.ajax({
+			url:'command/play',
+
+			data: {link :$(this).data('link')}
+		})
+		console.log('click')
+	});
+
+	$(window).on('devicemotion',function(e){
+
+		checkForAction(e.originalEvent);
+
+
+		// console.log(x,y,z)
+
+	})
+
+
 });
 
 
 
 
-	 window.addEventListener('shake', shakeEventDidOccur, false);
+	window.addEventListener('shake', shakeEventDidOccur, false);
+
+	//fyfubanana
 
 	var message=  document.querySelector('#message');
 
 	var topEl = document.querySelector('#top');
-	var request = new XMLHttpRequest();
 	//function to call when shake occurs
+	var request = new XMLHttpRequest();
 	function shakeEventDidOccur () {
-
-	    //put your own code here etc.
-	    	console.log('shaking');
-
-
-
+		if(shake){
 	    	request.open('get', '/command/playpause', true);
 	    	request.send();
+	   }
 	}
 	var topVar = { x: 0, y: 0, z: 0};
 
 	var chilloutDawg = false;
 var i = 0;
+
+
+function checkForAction(e){
+		var x = e.accelerationIncludingGravity.x
+		var y = e.accelerationIncludingGravity.y
+		var z = e.accelerationIncludingGravity.z
+
+		// console.log(x,y,z)
+}
+
 /*
 	window.ondevicemotion = function(event) {  
 	    var accelerationX = event.accelerationIncludingGravity.x;  

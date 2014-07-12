@@ -1,3 +1,9 @@
+*{
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
 body {
 	background: #e6e6e6;
   	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -5,6 +11,9 @@ body {
 
 a {
   color: #00B7FF;
+}
+.wrapper{
+	padding: 20px 10px;
 }
 
 #playpause{
@@ -18,21 +27,28 @@ a {
 
 }
 #prev{
-
 	float: left;
-	margin-left: 20px;
 }
 #next{
-	float: right;
-	margin-right: 20px;
-	
+	float: right;	
 }
+
 #next, #prev{
 	color: #262626;
 	background: #81b71a;
 	padding: 20px 10px;
 	font-size: 20px;
 	width: 100px;
+	text-align: center;
+	border-radius: 10px;
+}
+
+#shake{
+	color: #262626;
+	background: #81b71a;
+	padding: 20px 10px;
+	font-size: 20px;
+	display: block;
 	text-align: center;
 	border-radius: 10px;
 }
@@ -71,18 +87,38 @@ a {
 .white{
 	background: #fff !important;
 }
+.floatfix{
+	clear: both;
+}
 
+#search{
+	width: 100%;
+	height: 40px;
+	padding: 10px;
+	border: 0;
+	border-radius: 0;
+	margin-top: 20px;
+
+	font-size: 16px;
+}
+
+#search-suggestions ul{
+	margin-left: 0px;
+	padding-left: 0px;
+}
+#search-suggestions ul li{
+	list-style-type: none;
+	padding: 20px;
+	background: white;
+	margin-bottom: 2px;
+	font-size: 16px;
+}
 
 .unselectable{
    -moz-user-select: none;
    -khtml-user-select: none;
    -webkit-user-select: none;
    outline: none;
-
-   /*
-     Introduced in IE 10.
-     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-   */
    -ms-user-select: none;
    user-select: none;
 }
